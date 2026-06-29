@@ -105,6 +105,9 @@ def analizar():
         )
         texto = resp.content[0].text
 
+        # DIAGNÓSTICO: registrar primeros 300 caracteres de la respuesta
+        print(f"[CLAUDE RAW] {texto[:300]}", flush=True)
+
         # Limpiar: quitar bloques markdown ```json ... ``` si los hay
         t = texto.strip()
         if t.startswith('```'):
