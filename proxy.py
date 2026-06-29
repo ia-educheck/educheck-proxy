@@ -105,6 +105,19 @@ def analizar():
         )
         texto = resp.content[0].text
 
+        # Limpiar: quitar bloques markdown ```json ... ``` si los hay
+        t = texto.strip()
+        if t.startswith('```'):
+            t = t.split('```', 2)
+            if len(t) >= 2:
+                cuerpo = t[1]
+                if cuerpo.lstrip().lower().startswith('json'):
+                    cuerpo = cuerpo.lstrip()[4:]
+                texto = cuerpo.strip()
+        # Si aún hay texto antes del primer { , recortar al primer { y último }
+        if '{' in texto and '}' in texto:
+            texto = texto[texto.index('{'): texto.rindex('}')+1]
+
         # 5. Registrar consumo
         tin = resp.usage.input_tokens
         tout = resp.usage.output_tokens
