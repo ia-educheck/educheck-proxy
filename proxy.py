@@ -100,10 +100,14 @@ def analizar():
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         resp = client.messages.create(
             model=CLAUDE_MODEL,
-            max_tokens=1200,
+            max_tokens=2500,
             messages=[{"role": "user", "content": prompt}],
         )
         texto = resp.content[0].text
+
+        # DIAGNOSTICO: longitud total y ultimos 200 chars (donde esta nota_total)
+        print(f"[CLAUDE LEN] {len(texto)} chars | stop_reason={resp.stop_reason}", flush=True)
+        print(f"[CLAUDE FIN] ...{texto[-200:]}", flush=True)
 
         # Limpieza robusta: extraer SOLO el JSON entre el primer { y el último }
         import re as _re
