@@ -105,21 +105,14 @@ def analizar():
         )
         texto = resp.content[0].text
 
-        # DIAGNÓSTICO: registrar primeros 300 caracteres de la respuesta
-        print(f"[CLAUDE RAW] {texto[:300]}", flush=True)
-
-        # Limpiar: quitar bloques markdown ```json ... ``` si los hay
-        t = texto.strip()
-        if t.startswith('```'):
-            t = t.split('```', 2)
-            if len(t) >= 2:
-                cuerpo = t[1]
-                if cuerpo.lstrip().lower().startswith('json'):
-                    cuerpo = cuerpo.lstrip()[4:]
-                texto = cuerpo.strip()
-        # Si aún hay texto antes del primer { , recortar al primer { y último }
+        # Limpieza robusta: extraer SOLO el JSON entre el primer { y el último }
+        import re as _re
+        # quitar fences markdown ```json ... ```
+        texto = _re.sub(r'```(?:json)?', '', texto)
+        # recortar del primer { al último }
         if '{' in texto and '}' in texto:
             texto = texto[texto.index('{'): texto.rindex('}')+1]
+        texto = texto.strip()
 
         # 5. Registrar consumo
         tin = resp.usage.input_tokens
